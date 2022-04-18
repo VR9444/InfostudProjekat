@@ -1,0 +1,54 @@
+version: "3.2"
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT_KEY: dev
+    restart: unless-stopped
+    links:
+      - mysql
+    networks:
+      - symfony-auth
+    ports:
+      - 10001:80
+    volumes:
+      - ./:/var/www
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: mysql://root:root@mysql:3306/symfony-auth?serverVersion=5.7
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - 10002:80
+    links:
+      - mysql
+    networks:
+      - symfony-auth
+  mysql:
+    image: mysql
+    platform: linux/amd64
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    volumes:
+      - symfony-auth-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: symfony-auth
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin12345
+    networks:
+      - symfony-auth
+
+networks:
+  symfony-auth:
+    driver: overlay
+
+volumes:
+  symfony-auth-data:
