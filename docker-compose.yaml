@@ -49,6 +49,7 @@ services:
 networks:
   symfony-auth:
     driver: overlay
+    attachable: true
 
 volumes:
   symfony-auth-data:

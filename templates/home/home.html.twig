@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block javascripts %}
+{{ form_parent() }}
+    <script src="{{ asset('javascript/home.js') }}"></script>
+{% endblock %}
+{% block body %}
+
+    <form action="{{ path('') }}" method="get">
+
+        <div class="d-flex align-items-center jusify-content-center flex-column align-middle" style="height:100%">
+            <input class="m-4" type="datetime-local" id="dateTimeFrom">
+            <input class="m-4" type="datetime-local" id="dateTimeTo">
+            <input class="m-4" type="number" id="numberOfSeats">
+            <button class="m-4" class="btn btn-primary">Find</button>
+        </div>
+    </form>
+
+{% endblock %}
