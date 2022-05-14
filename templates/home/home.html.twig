@@ -1,21 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Log in!{% endblock %}
-
 {% block javascripts %}
-{{ form_parent() }}
-    <script src="{{ asset('javascript/home.js') }}"></script>
-{% endblock %}
+   {% endblock %}
 {% block body %}
 
-    <form action="{{ path('') }}" method="get">
+   <form action="{{ path('app_hall_find') }}" method="post">
 
         <div class="d-flex align-items-center jusify-content-center flex-column align-middle" style="height:100%">
-            <input class="m-4" type="datetime-local" id="dateTimeFrom">
-            <input class="m-4" type="datetime-local" id="dateTimeTo">
-            <input class="m-4" type="number" id="numberOfSeats">
-            <button class="m-4" class="btn btn-primary">Find</button>
+            <input class="m-4" type="date" name="date"/>
+            <input class="m-4" type="time" id="timeFrom" name="timeFrom">
+            <input class="m-4" type="time" id="timeTo" name="timeTo">
+            <input class="m-4" type="number" id="numberOfSeats" name="numberOfSeats">
+            <button class="m-4" class="btn btn-primary" id="findButton" type="submit">Find</button>
         </div>
     </form>
+
 
 {% endblock %}

@@ -54,10 +54,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $reservations;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $FirstName;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $LastName;
+
+    /**
+     * @ORM\OneToMany(targetEntity=UserReservationLink::class, mappedBy="User", orphanRemoval=true)
+     */
+    private $userReservationLinks;
+
     public function __construct()
     {
         $this->ads = new ArrayCollection();
         $this->reservations = new ArrayCollection();
+        $this->userReservationLinks = new ArrayCollection();
     }
 
 
@@ -217,6 +233,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($reservation->getCreatedBy() === $this) {
                 $reservation->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->FirstName;
+    }
+
+    public function setFirstName(string $FirstName): self
+    {
+        $this->FirstName = $FirstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->LastName;
+    }
+
+    public function setLastName(string $LastName): self
+    {
+        $this->LastName = $LastName;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserReservationLink>
+     */
+    public function getUserReservationLinks(): Collection
+    {
+        return $this->userReservationLinks;
+    }
+
+    public function addUserReservationLink(UserReservationLink $userReservationLink): self
+    {
+        if (!$this->userReservationLinks->contains($userReservationLink)) {
+            $this->userReservationLinks[] = $userReservationLink;
+            $userReservationLink->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserReservationLink(UserReservationLink $userReservationLink): self
+    {
+        if ($this->userReservationLinks->removeElement($userReservationLink)) {
+            // set the owning side to null (unless already changed)
+            if ($userReservationLink->getUser() === $this) {
+                $userReservationLink->setUser(null);
             }
         }
 

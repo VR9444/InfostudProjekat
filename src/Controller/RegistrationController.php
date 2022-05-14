@@ -44,7 +44,8 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
-
+            $user->setFirstName('Lorem');
+            $user->setLastName('Ipsum');
             $entityManager->persist($user);
             $entityManager->flush();
 

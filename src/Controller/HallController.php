@@ -4,9 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Hall;
 use App\Entity\Reservations;
-use Doctrine\ORM\EntityManager;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,19 +13,31 @@ use Symfony\Component\Routing\Annotation\Route;
 class HallController extends AbstractController
 {
     /**
-     * @Route("/hall/find", name="app_hall")
+     * @Route("/hall/find", name="app_hall_find")
      */
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, \Symfony\Component\HttpFoundation\Request $request): Response
     {
+        $timeFrom = $request->request->get("timeFrom");
+        $timeTo = $request->request->get("timeTo");
+        $date = $request->request->get("date");
 
-        $from = new \DateTime("2022-12-5 10:46:00");
-        $to =  new \DateTime("2022-12-5 18:47:00");
+        if($timeTo == null || $timeFrom == null || $date == null){
+            $timeFrom =  date("H:i:s");
+            $timeTo = date("H:i:s");
+            $date = date("Y-m-d");
+        }
+
+        $numberOfSeats = $request->request->get("numberOfSeats");
+
+        $dateTimeFrom = $date." ".$timeFrom;
+        $dateTimeTo = $date." ".$timeTo;
+
 
         $notAvaliablehallsIds = array();
         $allHallsIds = array();
 
 
-        $notAvaliablehalls = $entityManager->getRepository(Reservations::class)->findNotFreeHalls($from,$to);
+        $notAvaliablehalls = $entityManager->getRepository(Reservations::class)->findNotFreeHalls($dateTimeFrom,$dateTimeTo);
         $allHalls = $entityManager->getRepository(Hall::class)->getAllHallIds();
 
         foreach ($allHalls as $i){
@@ -40,11 +51,14 @@ class HallController extends AbstractController
         $avaliableHallsIds = array_diff($allHallsIds , $notAvaliablehallsIds);
 
         $avaliableHalls = $entityManager->getRepository(Hall::class)->findBy(array('id'=>$avaliableHallsIds));
-        dd($avaliableHalls);
-
+        $allUsers = $entityManager->getRepository(User::class)->findAll();
 
         return $this->render('hall/index.html.twig', [
-            'avaliableHalls' => $avaliableHalls
+            'avaliableHalls' => $avaliableHalls,
+            'users' => $allUsers,
+            "timeFrom"=> $timeFrom,
+            "timeTo"=> $timeTo,
+            "date"=>$date
         ]);
     }
 }

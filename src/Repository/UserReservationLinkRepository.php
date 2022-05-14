@@ -2,34 +2,31 @@
 
 namespace App\Repository;
 
-use App\Entity\Hall;
-use App\Entity\Reservations;
+use App\Entity\UserReservationLink;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
-use PhpParser\Node\Expr\Array_;
-use function Doctrine\ORM\QueryBuilder;
 
 /**
- * @method Reservations|null find($id, $lockMode = null, $lockVersion = null)
- * @method Reservations|null findOneBy(array $criteria, array $orderBy = null)
- * @method Reservations[]    findAll()
- * @method Reservations[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UserReservationLink|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserReservationLink|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserReservationLink[]    findAll()
+ * @method UserReservationLink[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ReservationsRepository extends ServiceEntityRepository
+class UserReservationLinkRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Reservations::class);
+        parent::__construct($registry, UserReservationLink::class);
     }
 
     /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function add(Reservations $entity, bool $flush = true): void
+    public function add(UserReservationLink $entity, bool $flush = true): void
     {
         $this->_em->persist($entity);
         if ($flush) {
@@ -41,7 +38,7 @@ class ReservationsRepository extends ServiceEntityRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function remove(Reservations $entity, bool $flush = true): void
+    public function remove(UserReservationLink $entity, bool $flush = true): void
     {
         $this->_em->remove($entity);
         if ($flush) {
@@ -49,14 +46,17 @@ class ReservationsRepository extends ServiceEntityRepository
         }
     }
 
+     /**
+      * @return UserReservationLink[] Returns an array of UserReservationLink objects
+      */
 
-
-    public function findNotFreeHalls( $DateTimeFrom, $DateTimeTo): ?Array
+    public function getNotFreeUsers( $DateTimeFrom, $DateTimeTo,$users)
     {
-        $qr = $this->createQueryBuilder('r');
-        $qr->Select("(h.id) as id");
-        $qr->leftJoin("App\Entity\Hall","h", Join::WITH,"h.id = r.Hall")
-            ->where(
+        $qr =  $this->createQueryBuilder('l')
+            ->select("(u.id) as id","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo")
+            ->leftJoin("App\Entity\User","u", Join::WITH,"l.User = u.id")
+            ->leftJoin("App\Entity\Reservations","r", Join::WITH,"r.id = l.Reservations");
+            $qr->where(
                 $qr->expr()->orX(
                     $qr->expr()->andX(
                         $qr->expr()->gte("r.DateTimeFrom",":DateTimeFrom"),
@@ -76,10 +76,26 @@ class ReservationsRepository extends ServiceEntityRepository
                     )
                 )
             )
+                ->andWhere(
+                    $qr->expr()->in("u.id",":users")
+                )
             ->setParameter("DateTimeFrom",$DateTimeFrom)
-            ->setParameter("DateTimeTo",$DateTimeTo);
+            ->setParameter("DateTimeTo",$DateTimeTo)
+            ->setParameter("users",$users)
+        ;
         return $qr->getQuery()->getResult();
-
     }
 
+
+    /*
+    public function findOneBySomeField($value): ?UserReservationLink
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.exampleField = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+    */
 }

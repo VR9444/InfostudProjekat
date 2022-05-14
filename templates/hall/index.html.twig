@@ -3,18 +3,88 @@
 {% block title %}Hello HallController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+        <form action="{{ path('app_hall_find') }}" method="post">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+                <div class="d-flex align-items-center jusify-content-center flex-column align-middle" style="height:100%">
+                        <input class="m-4" type="date" id="date" value="{{ date }}" name="date"/>
+                        <input class="m-4" type="time" id="timeFrom" value="{{ timeFrom}}"  name="timeFrom">
+                        <input class="m-4" type="time" id="timeTo" value="{{ timeTo }}" name="timeTo">
+                        <input class="m-4" type="number" id="numberOfSeats" name="numberOfSeats">
+                        <button class=" m-4 btn btn-primary" id="findButton" type="submit">Find</button>
+                </div>
+        </form>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/var/www/src/Controller/HallController.php'|file_link(0) }}">src/Controller/HallController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/var/www/templates/hall/index.html.twig'|file_link(0) }}">templates/hall/index.html.twig</a></code></li>
-    </ul>
+<div class="container">
+        <div class="row align-items-center">
+        {%  for hall in avaliableHalls %}
+
+                <div class="col g-3">
+                        <div class="card" style="width: 18rem">
+                                <div class="card-body">
+                                        <h5 class="card-title">{{ hall.name }}</h5>
+                                        <p class="card-text">{{ hall.about }}</p>
+                                        <br>
+                                                <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" data-bs-target="#adminModalTables">Reserve</button>
+                                        <br>
+                                </div>
+
+                        </div>
+                </div>
+    {% endfor %}
+        </div>
 </div>
+
+        <!-- Modal -->
+
+
+<div class="modal fade " id="adminModalTables" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+                <div class="modal-content modal-width">
+                        <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">User Info</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="modalBodyUsers">
+                                <div id="people" class="container">
+                                        <div id="addPeopleHere" class="row">
+
+
+                                        </div>
+                                </div>
+                                <div class="search-div">
+                                        <div>
+                                                <input type="text" id="userSearch">
+                                                <button id="AddButton" >Add</button>
+                                        </div>
+                                        <div id="SearchPrediction"></div>
+                                </div>
+                                <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button id="hallIdButtonModal" type="button" class="btn btn-primary" data-bs-dismiss="modal">Reserve</button>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+                <!--MODAL OBAVESTENJE ZA NASTAVAK -->
+
+        <div class="modal fade " id="AreYouSoureModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                        <div class="modal-content modal-width">
+                                <div id="modalMessages" class="modal-body">
+
+                                </div>
+                                        <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button id="hallIdButtonModal" type="button" class="btn btn-danger" data-bs-dismiss="modal">Proceed</button>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+
+
+
+
+
 {% endblock %}

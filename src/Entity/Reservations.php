@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\ReservationsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @ORM\Entity(repositoryClass=ReservationsRepository::class)
@@ -39,7 +42,17 @@ class Reservations
      */
     private $CreatedBy;
 
-    public function getId(): ?int
+    /**
+     * @ORM\OneToMany(targetEntity=UserReservationLink::class, mappedBy="Reservations")
+     */
+    private $userReservationLinks;
+
+    public function __construct()
+    {
+        $this->userReservationLinks = new ArrayCollection();
+    }
+
+    public function getId(): ?\DateTime
     {
         return $this->id;
     }
@@ -56,24 +69,24 @@ class Reservations
         return $this;
     }
 
-    public function getDateTimeFrom(): ?\DateTimeInterface
+    public function getDateTimeFrom(): ?\DateTime
     {
         return $this->DateTimeFrom;
     }
 
-    public function setDateTimeFrom(\DateTimeInterface $DateTimeFrom): self
+    public function setDateTimeFrom(\DateTime $DateTimeFrom): self
     {
         $this->DateTimeFrom = $DateTimeFrom;
 
         return $this;
     }
 
-    public function getDateTimeTo(): ?\DateTimeInterface
+    public function getDateTimeTo(): \DateTime
     {
         return $this->DateTimeTo;
     }
 
-    public function setDateTimeTo(\DateTimeInterface $DateTimeTo): self
+    public function setDateTimeTo(\DateTime $DateTimeTo): self
     {
         $this->DateTimeTo = $DateTimeTo;
 
@@ -88,6 +101,36 @@ class Reservations
     public function setCreatedBy(?User $CreatedBy): self
     {
         $this->CreatedBy = $CreatedBy;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserReservationLink>
+     */
+    public function getUserReservationLinks(): Collection
+    {
+        return $this->userReservationLinks;
+    }
+
+    public function addUserReservationLink(UserReservationLink $userReservationLink): self
+    {
+        if (!$this->userReservationLinks->contains($userReservationLink)) {
+            $this->userReservationLinks[] = $userReservationLink;
+            $userReservationLink->setReservations($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserReservationLink(UserReservationLink $userReservationLink): self
+    {
+        if ($this->userReservationLinks->removeElement($userReservationLink)) {
+            // set the owning side to null (unless already changed)
+            if ($userReservationLink->getReservations() === $this) {
+                $userReservationLink->setReservations(null);
+            }
+        }
 
         return $this;
     }
