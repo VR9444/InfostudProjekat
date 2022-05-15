@@ -8,6 +8,9 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Void_;
+use PhpParser\Node\Expr\Array_;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method UserReservationLink|null find($id, $lockMode = null, $lockVersion = null)
@@ -53,7 +56,7 @@ class UserReservationLinkRepository extends ServiceEntityRepository
     public function getNotFreeUsers( $DateTimeFrom, $DateTimeTo,$users)
     {
         $qr =  $this->createQueryBuilder('l')
-            ->select("(u.id) as id","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo")
+            ->select("(l.State) as State, (u.id) as id","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo")
             ->leftJoin("App\Entity\User","u", Join::WITH,"l.User = u.id")
             ->leftJoin("App\Entity\Reservations","r", Join::WITH,"r.id = l.Reservations");
             $qr->where(
@@ -86,16 +89,93 @@ class UserReservationLinkRepository extends ServiceEntityRepository
         return $qr->getQuery()->getResult();
     }
 
-
-    /*
-    public function findOneBySomeField($value): ?UserReservationLink
+    /**
+     * @return UserReservationLink[] Returns an array of UserReservationLink objects
+     */
+    public function getJoinedDataWithReservationId($id): Array
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $qr =  $this->createQueryBuilder('l')
+            ->select("(l.State) as State,(u.id) as UserId","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(uc.FirstName) as CreatedByFirstName","(uc.LastName) as CreatedByLastName","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo","(h.Name) as hallName")
+            ->leftJoin("App\Entity\User","u", Join::WITH,"l.User = u.id")
+            ->leftJoin("App\Entity\Reservations","r", Join::WITH,"r.id = l.Reservations")
+            ->leftJoin("App\Entity\Hall","h", Join::WITH,"h.id = r.Hall")
+            ->leftJoin("App\Entity\User","uc", Join::WITH,"uc.id = r.CreatedBy")
+            ->andWhere('r.id = :id')
+            ->setParameter('id', $id);
+
+
+        return $qr->getQuery()->getResult();
     }
-    */
+
+    /**
+     * @return UserReservationLink[] Returns an array of UserReservationLink objects
+     */
+    public function getJoinedDataWithUserId($id): Array
+    {
+        $qr =  $this->createQueryBuilder('l')
+            ->select("(l.State) as State","(u.id) as UserId","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(uc.FirstName) as CreatedByFirstName","(uc.LastName) as CreatedByLastName","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo","(h.Name) as hallName","(r.id) as ReservationId")
+            ->leftJoin("App\Entity\User","u", Join::WITH,"l.User = u.id")
+            ->leftJoin("App\Entity\Reservations","r", Join::WITH,"r.id = l.Reservations")
+            ->leftJoin("App\Entity\Hall","h", Join::WITH,"h.id = r.Hall")
+            ->leftJoin("App\Entity\User","uc", Join::WITH,"uc.id = r.CreatedBy")
+            ->andWhere('r.CreatedBy = :id')
+            ->setParameter('id', $id);
+
+
+        return $qr->getQuery()->getResult();
+    }
+
+
+    /**
+     * @return UserReservationLink[] Returns an array of UserReservationLink objects
+     */
+    public function getJoinedDataWithUserIdForMessages($id,$date): Array
+    {
+        $qr =  $this->createQueryBuilder('l')
+            ->select("(l.State) as State","(u.id) as UserId","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(uc.FirstName) as CreatedByFirstName","(uc.LastName) as CreatedByLastName","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo","(h.Name) as hallName","(r.id) as ReservationId")
+            ->leftJoin("App\Entity\User","u", Join::WITH,"l.User = u.id")
+            ->leftJoin("App\Entity\Reservations","r", Join::WITH,"r.id = l.Reservations")
+            ->leftJoin("App\Entity\Hall","h", Join::WITH,"h.id = r.Hall")
+            ->leftJoin("App\Entity\User","uc", Join::WITH,"uc.id = r.CreatedBy")
+            ->andWhere('l.User = :id')
+            ->andWhere('r.DateTimeFrom >= :date')
+            ->setParameter('id', $id)
+            ->setParameter('date', $date);
+
+
+        return $qr->getQuery()->getResult();
+    }
+
+    /**
+     * @return UserReservationLink[] Returns an array of UserReservationLink objects
+     */
+    public function deleteUserResLinkWithResId($id): string
+    {
+        $qr =  $this->createQueryBuilder('l');
+            $qr->where(
+                $qr->expr()->eq("l.Reservations",":id")
+            )
+            ->setParameter('id', $id)
+                ->delete()
+                ->getQuery()
+                ->execute();
+        return "none";
+    }
+
+    /**
+     * @return UserReservationLink[] Returns an array of UserReservationLink objects
+     */
+    public function deleteUserResLinkWithResIdAndUserId($id,$resId): string
+    {
+        $qr =  $this->createQueryBuilder('l');
+        $qr->where("l.User = :id")
+            ->andWhere("l.Reservations = :resId")
+            ->setParameter('id', $id)
+            ->setParameter('resId', $resId)
+            ->delete()
+            ->getQuery()
+            ->execute();
+        return "none";
+    }
+
 }

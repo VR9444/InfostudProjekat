@@ -82,4 +82,31 @@ class ReservationsRepository extends ServiceEntityRepository
 
     }
 
+    public function getAllReservationsByDate($date): ?Array
+    {
+        $qr = $this->createQueryBuilder('r')
+            ->select("(r.id) as id","(r.DateTimeFrom) as DateTimeFrom","(r.DateTimeTo) as DateTimeTo","(r.CreatedBy) as CreatedBy","(r.Hall) as HallId");
+
+            $qr->where("r.DateTimeFrom LIKE :Date")
+                ->orderBy("r.DateTimeFrom","ASC")
+            ->setParameter("Date","%".$date."%");
+        return $qr->getQuery()->getResult();
+
+    }
+
+    public function deleteReservationById($id): ?string
+    {
+        $qr =  $this->createQueryBuilder('r');
+        $qr->where(
+            $qr->expr()->eq("r.id",":id")
+        )
+            ->setParameter('id', $id)
+            ->delete()
+            ->getQuery()
+            ->execute();
+
+        return "none";
+
+    }
+
 }

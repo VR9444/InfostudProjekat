@@ -2,19 +2,54 @@
 
 {% block title %}Hello UserController!{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('build/js/reservationChartAdmin.js') }}" ></script>
+{% endblock %}
+
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <div class="container-fluid bg-primary p-5">
+        <input class="m-auto d-block" type="date" value="{{ date }}" id="date">
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/var/www/src/Controller/UserController.php'|file_link(0) }}">src/Controller/UserController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/var/www/templates/user/index.html.twig'|file_link(0) }}">templates/user/index.html.twig</a></code></li>
-    </ul>
-</div>
+
+    <div class="container-fluid my-3" id="reservationChart">
+        {% for hall in allHalls %}
+            <div class="row chartRow">
+                <div class="row">
+                    <span class="col-12 HallName" >{{ hall.name }}</span>
+                </div>
+                <div class="FromToChart">
+                    <span class="HallName" >07:00</span>
+                    <span class="HallName" >20:00</span>
+                </div>
+                <div class="col-12 ChartBar" id="HallChart_{{ hall.id }}"></div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+
+
+
+
+
+
+    <div class="modal fade " id="modalGeneral" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content modal-width">
+                <div id="modalGeneralMessages" class="modal-body">
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="addUserToggleButton">Add User</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="reservationDeleteButton">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}

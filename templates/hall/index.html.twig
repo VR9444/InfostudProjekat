@@ -1,16 +1,40 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello HallController!{% endblock %}
-
+{% block javascripts %}
+        {{ parent() }}
+        <script src="{{ asset('build/js/reserveHall.js') }}" ></script>
+        <script src="{{ asset('build/js/reservationChart.js') }}" ></script>
+        <script src="{{ asset("build/js/messages.js") }}" ></script>
+{% endblock %}
 {% block body %}
-        <form action="{{ path('app_hall_find') }}" method="post">
+        <div class="navbar">
+                <div>
+                        <img height="50px"  src="{{ asset('images/logo.png') }}" alt="logo">
+                </div>
+                <div>
+                        <a href="{{ path('app_home') }}">
+                                Home
+                        </a>
+
+                        <button class="btn btn-primary" id="MessagesButtonToggle">
+                                Invitations
+                        </button>
+
+                </div>
+
+        </div>
+        <div id="Messages">
+
+        </div>
+        <form class="bg-primary" action="{{ path('app_hall_find') }}" method="GET">
 
                 <div class="d-flex align-items-center jusify-content-center flex-column align-middle" style="height:100%">
-                        <input class="m-4" type="date" id="date" value="{{ date }}" name="date"/>
+                        <input class="m-4" type="date" min="{{ minDate }}" max="{{ maxDate }}" placeholder="dd-mm-yyyy" id="date" value="{{ date }}" name="date"/>
                         <input class="m-4" type="time" id="timeFrom" value="{{ timeFrom}}"  name="timeFrom">
                         <input class="m-4" type="time" id="timeTo" value="{{ timeTo }}" name="timeTo">
                         <input class="m-4" type="number" id="numberOfSeats" name="numberOfSeats">
-                        <button class=" m-4 btn btn-primary" id="findButton" type="submit">Find</button>
+                        <button class=" m-4 btn btn-light" id="findButton" type="submit">Find</button>
                 </div>
         </form>
 
@@ -33,6 +57,22 @@
     {% endfor %}
         </div>
 </div>
+        <div class="container-fluid my-3" id="reservationChart">
+                {% for hall in allHalls %}
+                        <div class="row chartRow">
+                                <div class="row">
+                                        <span class="col-12 HallName" >{{ hall.name }}</span>
+                                </div>
+                                <div class="FromToChart">
+                                        <span class="HallName" >07:00</span>
+                                        <span class="HallName" >20:00</span>
+                                </div>
+                                 <div class="col-12 ChartBar" id="HallChart_{{ hall.id }}"></div>
+
+                        </div>
+                {% endfor %}
+        </div>
+
 
         <!-- Modal -->
 
@@ -45,19 +85,19 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" id="modalBodyUsers">
+                                <div class="search-div">
+                                        <div>
+                                                <input type="text" id="userSearch">
+                                        </div>
+                                        <div id="SearchPrediction" class="notVisible"></div>
+                                </div>
                                 <div id="people" class="container">
                                         <div id="addPeopleHere" class="row">
 
 
                                         </div>
                                 </div>
-                                <div class="search-div">
-                                        <div>
-                                                <input type="text" id="userSearch">
-                                                <button id="AddButton" >Add</button>
-                                        </div>
-                                        <div id="SearchPrediction"></div>
-                                </div>
+
                                 <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         <button id="hallIdButtonModal" type="button" class="btn btn-primary" data-bs-dismiss="modal">Reserve</button>
@@ -66,7 +106,7 @@
                 </div>
         </div>
 </div>
-                <!--MODAL OBAVESTENJE ZA NASTAVAK -->
+                <!--MODAL UPIT ZA NASTAVAK REZERVACIJE-->
 
         <div class="modal fade " id="AreYouSoureModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
@@ -76,8 +116,22 @@
                                 </div>
                                         <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button id="hallIdButtonModal" type="button" class="btn btn-danger" data-bs-dismiss="modal">Proceed</button>
+                                                <button id="proceedButton" type="button" class="btn btn-danger" data-bs-dismiss="modal">Proceed</button>
                                         </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+        <!-- MODAL ZA PORUKE -->
+        <div class="modal fade " id="modalGeneral" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                        <div class="modal-content modal-width">
+                                <div id="modalGeneralMessages" class="modal-body">
+
+
+                                </div>
+                                <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 </div>
                         </div>
                 </div>

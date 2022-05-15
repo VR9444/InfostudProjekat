@@ -29,6 +29,11 @@ class UserReservationLink
      */
     private $Reservations;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $State;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -54,6 +59,18 @@ class UserReservationLink
     public function setReservations(?Reservations $Reservations): self
     {
         $this->Reservations = $Reservations;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->State;
+    }
+
+    public function setState(string $State): self
+    {
+        $this->State = $State;
 
         return $this;
     }

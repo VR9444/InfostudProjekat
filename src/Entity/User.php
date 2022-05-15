@@ -45,11 +45,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $isVerified = false;
 
     /**
-     * @ORM\OneToMany(targetEntity=Ad::class, mappedBy="User")
-     */
-    private $ads;
-
-    /**
      * @ORM\OneToMany(targetEntity=Reservations::class, mappedBy="CreatedBy")
      */
     private $reservations;
@@ -179,35 +174,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Ad>
-     */
-    public function getAds(): Collection
-    {
-        return $this->ads;
-    }
-
-    public function addAd(Ad $ad): self
-    {
-        if (!$this->ads->contains($ad)) {
-            $this->ads[] = $ad;
-            $ad->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAd(Ad $ad): self
-    {
-        if ($this->ads->removeElement($ad)) {
-            // set the owning side to null (unless already changed)
-            if ($ad->getUser() === $this) {
-                $ad->setUser(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Reservations>
