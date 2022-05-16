@@ -70,6 +70,16 @@ class ReservationController extends AbstractController
         $hallId = $request->request->get("hallId");
         $users = $request->request->get("users");
 
+        //FAKE
+
+//        $timeFrom = '11:00';
+//        $timeTo = '12:00';
+//        $date = '2022-05-26';
+//        $hallId = 1;
+//        $users = [1,2];
+
+
+        $numberOfUsers = count($users);
         $dateTimeFrom = $date." ".$timeFrom;
         $dateTimeTo = $date." ".$timeTo;
         //
@@ -81,11 +91,24 @@ class ReservationController extends AbstractController
 
         $notAvaliablehalls = $entityManager->getRepository(Reservations::class)->findNotFreeHalls($dateTimeFrom,$dateTimeTo);
 
+        $avaliableHallsBySize = $entityManager->getRepository(Hall::class)->findHallsBySize($numberOfUsers);
+
+        $flag = false;
+
+        foreach ($avaliableHallsBySize as $i){
+            if($i["id"] === (int)$hallId){
+                $flag = true;
+            }
+        }
+        if(!$flag){
+            return $this->json(json_encode(array("error"=>"Invalid number of users!")));
+        }
+
         foreach ($notAvaliablehalls as $i){
             $notAvaliablehallsIds[] = (int) $i["id"];
         }
-        $arrayHallId = [$hallId];
 
+        $arrayHallId = [$hallId];
 
         $isAvaliable = array_intersect($arrayHallId , $notAvaliablehallsIds);
 

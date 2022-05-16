@@ -46,7 +46,7 @@
                                                         <p class="card-text">{{ hall.About }}</p>
                                                         <p>Number of seats: {{ hall.numberOfSeats}} </p>
                                                         <br>
-                                                        <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" data-bs-target="#adminModalTables">Reserve</button>
+                                                        <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" numberOfSeats="{{ hall.numberOfSeats }}" data-bs-target="#adminModalTables">Reserve</button>
                                                         <br>
                                                 </div>
 
@@ -60,7 +60,7 @@
                                                         <p class="card-text">{{ hall.About }}</p>
                                                         <p>Number of seats: {{ hall.numberOfSeats}} </p>
                                                         <br>
-                                                        <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" data-bs-target="#adminModalTables">Reserve</button>
+                                                        <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" numberOfSeats="{{ hall.numberOfSeats }}" data-bs-target="#adminModalTables">Reserve</button>
                                                         <br>
                                                 </div>
 

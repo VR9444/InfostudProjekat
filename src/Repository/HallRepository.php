@@ -83,6 +83,25 @@ class HallRepository extends ServiceEntityRepository
 
     }
 
+
+    /**
+     * @return Reservations[] Returns an array of Reservations objects
+     */
+    public function findHallsBySize(int $numberOfSeats): array
+    {
+        $query = $this->createQueryBuilder('h')
+            ->select("h.id");
+        $query->where(
+                $query->expr()->gte("h.numberOfSeats",":numberOfSeats")
+        )
+            ->orderBy("h.numberOfSeats","ASC")
+            ->setParameter('numberOfSeats', $numberOfSeats);
+
+
+        return $query->getQuery()->getResult();
+
+    }
+
     /*
      $entityManager = $this->getEntityManager();
 
