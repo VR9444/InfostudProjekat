@@ -30,28 +30,46 @@
                         <input class="m-4" type="date" min="{{ minDate }}" max="{{ maxDate }}" placeholder="dd-mm-yyyy" id="date" value="{{ date }}" name="date"/>
                         <input class="m-4" type="time" id="timeFrom" value="{{ timeFrom}}"  name="timeFrom">
                         <input class="m-4" type="time" id="timeTo" value="{{ timeTo }}" name="timeTo">
-                        <input class="m-4" type="number" id="numberOfSeats" name="numberOfSeats">
+                        <input class="m-4" type="number" id="numberOfSeats" value="{{ numberOfSeats }}" name="numberOfSeats" required>
                         <button class=" m-4 btn btn-light" id="findButton" type="submit">Find</button>
                 </div>
         </form>
 
 <div class="container">
         <div class="row align-items-center">
-        {%  for hall in avaliableHalls %}
+                {% for key,hall in avaliableHalls %}
+                        {% if key == 0 %}
+                                <div class="col g-3">
+                                        <div class="card" style="width: 18rem; border: gold 4px solid">
+                                                <div class="card-body">
+                                                        <h5 class="card-title">{{ hall.Name }} </h5>
+                                                        <p class="card-text">{{ hall.About }}</p>
+                                                        <p>Number of seats: {{ hall.numberOfSeats}} </p>
+                                                        <br>
+                                                        <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" data-bs-target="#adminModalTables">Reserve</button>
+                                                        <br>
+                                                </div>
 
-                <div class="col g-3">
-                        <div class="card" style="width: 18rem">
-                                <div class="card-body">
-                                        <h5 class="card-title">{{ hall.name }}</h5>
-                                        <p class="card-text">{{ hall.about }}</p>
-                                        <br>
-                                                <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" data-bs-target="#adminModalTables">Reserve</button>
-                                        <br>
+                                        </div>
                                 </div>
+                        {% else %}
+                                <div class="col g-3">
+                                        <div class="card" style="width: 18rem">
+                                                <div class="card-body">
+                                                        <h5 class="card-title">{{ hall.Name }}</h5>
+                                                        <p class="card-text">{{ hall.About }}</p>
+                                                        <p>Number of seats: {{ hall.numberOfSeats}} </p>
+                                                        <br>
+                                                        <button type="button" class="btn btn-primary carryHallId" data-bs-toggle="modal" value="{{ hall.id }}" data-bs-target="#adminModalTables">Reserve</button>
+                                                        <br>
+                                                </div>
 
-                        </div>
-                </div>
-    {% endfor %}
+                                        </div>
+                                </div>
+                        {% endif %}
+
+
+                {% endfor %}
         </div>
 </div>
         <div class="container-fluid my-3" id="reservationChart">

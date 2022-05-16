@@ -9,6 +9,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use PhpParser\Node\Expr\Array_;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Hall|null find($id, $lockMode = null, $lockVersion = null)
@@ -63,54 +64,22 @@ class HallRepository extends ServiceEntityRepository
     /**
      * @return Reservations[] Returns an array of Reservations objects
      */
-    public function findAllFreeHalls($DateTimeFrom, $DateTimeTo)
+    public function findFreeHallsOnDate(array $ids, int $numberOfSeats): array
     {
+        $query = $this->createQueryBuilder('h')
+            ->select("h.id","h.About","h.Name","h.numberOfSeats");
+            $query->where(
+                $query->expr()->andX(
+                    $query->expr()->in("h.id",":ids"),
+                    $query->expr()->gte("h.numberOfSeats",":numberOfSeats")
+                )
+            )
+                ->orderBy("h.numberOfSeats","ASC")
+                ->setParameter('ids', $ids)
+                ->setParameter('numberOfSeats', $numberOfSeats);
 
 
-
-        /*$entityManager = $this->getEntityManager();
-
-        $query = $entityManager->createQuery(
-            "
-        SELECT h.*, from (
-            SELECT h.id as id,h.name as name,h.about as about,h.number_of_seats as numOfSeats, count(*) as cx
-            FROM App\Entity\Hall as h
-            left join reservations as reservation
-            on r.hall_id = h.id
-            WHERE not (( reservation.date_time_from >= :DateTimeFrom AND :DateTimeTo BETWEEN reservation.date_time_to and reservation.date_time_to)
-            OR ( :DateTimeFrom BETWEEN reservation.date_time_from and reservation.date_time_to and :DateTimeTo >= reservation.date_time_to)
-            OR ( :DateTimeFrom >= reservation.date_time_from and :DateTimeTo <= reservation.date_time_to)
-            OR ( :DateTimeFrom <= reservation.date_time_from and :DateTimeTo >= reservation.date_time_to))
-            OR (reservation.date_time_from is null AND reservation.date_time_to is null)
-            group by h.id
-            ORDER by h.id asc) as x
-        LEFT join (SELECT h.id as a, count(*) as cy
-        FROM App\Entity\Hall as h
-        left join reservations as reservation
-        on reservation.hall_id = h.id
-        group by h.id
-        ORDER by h.id asc) as y
-        on x.a = y.a
-        WHERE x.cx = y.cy
-        ;"
-        )->setParameter('DateTimeFrom', $DateTimeFrom)
-        ->setParameter('DateTimeTo', $DateTimeTo);
-
-        dd($query->getResult());
-
-        // returns an array of Product objects
-        return $query->getResult();
-
-
-        /*WHERE not (( reservation.startTime >= ? AND ? BETWEEN reservation.startTime and reservation.endTime)
-        OR ( ? BETWEEN reservation.startTime and reservation.endTime and ? >= reservation.endTime)
-        OR ( ? >= reservation.startTime and ? <= reservation.endTime)
-        OR ( ?<= reservation.startTime and ? >= reservation.endTime))
-        OR (reservation.startTime is null AND reservation.endTime is null)
-        group by tables.table_id
-        ORDER by tables.table_id asc) as x
-         */
-
+        return $query->getQuery()->getResult();
 
     }
 

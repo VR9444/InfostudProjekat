@@ -22,6 +22,7 @@ class HallController extends AbstractController
         $timeFrom = $request->query->get("timeFrom");
         $timeTo = $request->query->get("timeTo");
         $date = $request->query->get("date");
+        $numberOfSeats = $request->query->get("numberOfSeats");
 
         if($timeTo == null || $timeFrom == null || $date == null){
             $timeFrom =  date("H:i");
@@ -29,7 +30,7 @@ class HallController extends AbstractController
             $date = date("Y-m-d");
         }
 
-        $numberOfSeats = $request->request->get("numberOfSeats");
+
 
         $dateTimeFrom = $date." ".$timeFrom;
         $dateTimeTo = $date." ".$timeTo;
@@ -55,7 +56,7 @@ class HallController extends AbstractController
 
         $avaliableHallsIds = array_diff($allHallsIds , $notAvaliablehallsIds);
 
-        $avaliableHalls = $entityManager->getRepository(Hall::class)->findBy(array('id'=>$avaliableHallsIds));
+        $avaliableHalls = $entityManager->getRepository(Hall::class)->findFreeHallsOnDate($avaliableHallsIds,$numberOfSeats);
         $allUsers = $entityManager->getRepository(User::class)->findAll();
 
         $dateFromating = date('Y-m-d');
@@ -71,7 +72,8 @@ class HallController extends AbstractController
             "allHalls"=>$allHalls,
             "minDate"=> $minDate,
             "maxDate"=> $maxDate,
-            "mainUserId"=> $mainUserId
+            "mainUserId"=> $mainUserId,
+            "numberOfSeats"=>$numberOfSeats
         ]);
     }
 }
