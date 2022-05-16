@@ -129,7 +129,7 @@ class UserReservationLinkRepository extends ServiceEntityRepository
     /**
      * @return UserReservationLink[] Returns an array of UserReservationLink objects
      */
-    public function getJoinedDataWithUserIdForMessages($id,$date): Array
+    public function getJoinedDataWithUserIdForMessages( $id,$date): Array
     {
         $qr =  $this->createQueryBuilder('l')
             ->select("(l.State) as State","(u.id) as UserId","(u.FirstName) as FirstName", "(u.LastName) as LastName","(r.CreatedBy) as CreatedBy","(uc.FirstName) as CreatedByFirstName","(uc.LastName) as CreatedByLastName","(r.DateTimeFrom) as DateTimeFrom", "(r.DateTimeTo) as DateTimeTo","(h.Name) as hallName","(r.id) as ReservationId")
