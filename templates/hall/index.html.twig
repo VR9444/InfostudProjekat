@@ -40,7 +40,7 @@
                 {% for key,hall in avaliableHalls %}
                         {% if key == 0 %}
                                 <div class="col g-3">
-                                        <div class="card" style="width: 18rem; border: gold 4px solid">
+                                        <div class="card" style="min-width: 18rem; width: fit-content; border: gold 4px solid">
                                                 <div class="card-body">
                                                         <h5 class="card-title">{{ hall.Name }} </h5>
                                                         <p class="card-text">{{ hall.About }}</p>
@@ -54,7 +54,7 @@
                                 </div>
                         {% else %}
                                 <div class="col g-3">
-                                        <div class="card" style="width: 18rem">
+                                        <div class="card" style="min-width: 18rem; width: fit-content">
                                                 <div class="card-body">
                                                         <h5 class="card-title">{{ hall.Name }}</h5>
                                                         <p class="card-text">{{ hall.About }}</p>

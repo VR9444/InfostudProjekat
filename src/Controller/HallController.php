@@ -6,6 +6,7 @@ use App\Entity\Hall;
 use App\Entity\Reservations;
 use App\Entity\User;
 use App\Entity\UserReservationLink;
+use App\Form\HallFindFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,6 +29,9 @@ class HallController extends AbstractController
             $timeFrom =  date("H:i");
             $timeTo = date("H:i");
             $date = date("Y-m-d");
+        }
+        if($numberOfSeats == null){
+            $numberOfSeats = 5;
         }
 
 
@@ -74,6 +78,18 @@ class HallController extends AbstractController
             "maxDate"=> $maxDate,
             "mainUserId"=> $mainUserId,
             "numberOfSeats"=>$numberOfSeats
+        ]);
+    }
+
+    /**
+     * @Route("/hall/test", name="app_hall_test")
+     */
+    public function test(EntityManagerInterface $entityManager, \Symfony\Component\HttpFoundation\Request $request): Response
+    {
+        $form = $this->createForm(HallFindFormType::class);
+
+        return $this->render('hall/test.html.twig', [
+            'HallFindForm' => $form->createView()
         ]);
     }
 }
